@@ -11,7 +11,7 @@ table:first-of-type {
   margin-bottom: 15px;
 }
 table td {
-  @apply text-left p-1;
+  @apply text-left p-0.5;
 
 }
 table td, table th {

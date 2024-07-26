@@ -396,15 +396,6 @@
     "related": ["m4", "m49"]
   },
   {
-    "metric": "m49",
-    "category": "Environment",
-    "format": "percent",
-    "raw_label": "acres",
-    "title": "Tree Canopy - Residential",
-    "subtitle": "Percentage of residential land area covered by tree canopy",
-    "related": ["m4", "m3"]
-  },
-  {
     "metric": "m27",
     "category": "Environment",
     "label": "gallons per day per unit",

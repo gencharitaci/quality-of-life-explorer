@@ -10,7 +10,7 @@
   <div class="dropdown-content absolute text-center min-w-full bg-white shadow-lg z-10 right-0">
     <button class="text-black w-full px-2 py-2 block hover:bg-slate-300 text-sm" on:click={() => ($help = true)}>Tutorial</button>
     <a
-      href="http://charlottenc.gov/HNS/CE/CommunityInfo/Pages/QOL.aspx"
+      href="https://www.charlottenc.gov/Streets-and-Neighborhoods/Get-Involved/Neighborhood-Resources#section-3"
       class="text-black px-2 py-2 block hover:bg-slate-300 text-sm"
       target="_blank" rel="noreferrer">About</a
     >
