@@ -4,6 +4,13 @@ The Quality of Life project is a joint venture from Mecklenburg County, the City
 
 Site: [https://mcmap.org/qol](https://mcmap.org/qol)
 
+
+# Improvements & Fixes
+- Added Disclaimer modal popup
+- Upgraded Mapligre-GL (3.5.0 --> 4.7.1)
+- Removed option 'importsNotUsedAsValues': "error" 
+- Added option "verbatimModuleSyntax":true
+
 ## Architecture
 
 ![Architecture](./Architecture.png)

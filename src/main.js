@@ -14,7 +14,7 @@ import Contact from './lib/Contact.svelte'
 import NavMenu from './lib/NavMenu.svelte'
 import Help from './lib/Help.svelte'
 import Welcome from './lib/Welcome.svelte'
-
+import Disclaimer from './lib/Disclaimer.svelte'
 
 new NavMenu({
   target: document.getElementById("navmenu")
@@ -22,6 +22,10 @@ new NavMenu({
 
 new Welcome({
   target: document.getElementById("welcome")
+})
+
+new Disclaimer({
+  target: document.getElementById("disclaimer")
 })
 
 new Tabs({

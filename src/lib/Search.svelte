@@ -1,24 +1,24 @@
 <script>
-  import { selectedNeighborhoods, selectedData, mapZoom } from "../store/store"
-  import { isNumeric } from "./utils"
+  import { selectedNeighborhoods, selectedData, mapZoom } from "../store/store";
+  import { isNumeric } from "./utils";
 
-  let searchString = ""
-  let searchResults = []
+  let searchString = "";
+  let searchResults = [];
 
   function search() {
-    searchResults = []
-    const str = searchString.trim()
+    searchResults = [];
+    const str = searchString.trim();
 
     // if numeric look for NPA or zip
     if (isNumeric(str)) {
       // NPA
-      const keys = Object.keys($selectedData.m)
+      const keys = Object.keys($selectedData.m);
       if (keys.indexOf(str) !== -1)
         searchResults = searchResults.concat({
           cat: "NPA",
           id: str,
           label: str,
-        })
+        });
 
       // zipcode
       if (str.length === 5) {
@@ -27,19 +27,19 @@
         )
           .then((response) => {
             if (!response.ok) {
-              throw new Error()
+              throw new Error();
             }
-            return response.json()
+            return response.json();
           })
           .then((json) => {
-            searchResults = searchResults.concat(json)
+            searchResults = searchResults.concat(json);
           })
           .catch((error) => {
             console.error(
               "There has been a problem with your fetch operation:",
               error
-            )
-          })
+            );
+          });
       }
     }
 
@@ -50,25 +50,25 @@
         `ts @@ to_tsquery('addressing_en', '${
           str.toUpperCase().replace(/ /g, "&") + ":*"
         }')`
-      )
+      );
       fetch(
         `https://api.mcmap.org/v1/query/master_address_table?columns=objectid as id, full_address as label, 'ADDRESS' as cat&limit=10&filter=${filter}`
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error()
+            throw new Error();
           }
-          return response.json()
+          return response.json();
         })
         .then((json) => {
-          searchResults = searchResults.concat(json)
+          searchResults = searchResults.concat(json);
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
             error
-          )
-        })
+          );
+        });
 
       // NSA
       fetch(
@@ -76,26 +76,26 @@
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error()
+            throw new Error();
           }
-          return response.json()
+          return response.json();
         })
         .then((json) => {
-          searchResults = searchResults.concat(json)
+          searchResults = searchResults.concat(json);
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
             error
-          )
-        })
+          );
+        });
     }
   }
 
   function selectResults(cat, id) {
     if (cat === "NPA") {
-      $selectedNeighborhoods = [id]
-      $mapZoom = true
+      $selectedNeighborhoods = [id];
+      $mapZoom = true;
     }
     if (cat === "NSA") {
       fetch(
@@ -103,20 +103,20 @@
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error()
+            throw new Error();
           }
-          return response.json()
+          return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString())
-          $mapZoom = true
+          $selectedNeighborhoods = json.map((el) => el.id.toString());
+          $mapZoom = true;
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
             error
-          )
-        })
+          );
+        });
     }
     if (cat === "ZIP") {
       fetch(
@@ -124,20 +124,20 @@
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error()
+            throw new Error();
           }
-          return response.json()
+          return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString())
-          $mapZoom = true
+          $selectedNeighborhoods = json.map((el) => el.id.toString());
+          $mapZoom = true;
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
             error
-          )
-        })
+          );
+        });
     }
     if (cat === "ADDRESS") {
       fetch(
@@ -145,20 +145,20 @@
       )
         .then((response) => {
           if (!response.ok) {
-            throw new Error()
+            throw new Error();
           }
-          return response.json()
+          return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString())
-          $mapZoom = true
+          $selectedNeighborhoods = json.map((el) => el.id.toString());
+          $mapZoom = true;
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
             error
-          )
-        })
+          );
+        });
     }
   }
 </script>
@@ -181,7 +181,14 @@
       style="max-height: 200px;"
     >
       {#each searchResults as result}
+        <!-- 
+          Warning: A11y: <div> with click, keypress handlers must have an ARIA rolesvelte(a11y-no-static-element-interactions) 
+          Added (12/12/2024): role="button" // Add this line to define the ARIA role
+          Added (12/12/2024): tabindex="0" // Make the div focusable for keyboard interactions
+        -->
         <div
+          role="button"
+          tabindex="0"
           class="cursor-pointer whitespace-nowrap text-sm rounded text-blue-700 py-2 px-1 hover:bg-blue-500 hover:text-white transition-colors"
           on:click={() => selectResults(result.cat, result.id)}
           on:keypress={() => selectResults(result.cat, result.id)}

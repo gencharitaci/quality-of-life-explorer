@@ -1,33 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="description" content="Exploring neighborhood character, economics, education, engagement, environment, health, housing, safety and transportation.">
-    <meta name="author" content="Tobin Bradley">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Exploring neighborhood character, economics, education, engagement, environment, health, housing, safety and transportation."
+    />
+    <meta name="author" content="Tobin Bradley" />
 
     <title>Charlotte/Mecklenburg Quality of Life Explorer</title>
 
     <!-- preconnect for performance -->
-    <link rel="preconnect" href="https://www.google-analytics.com">
-    <link rel="preconnect" href="https://storage.googleapis.com">
+    <link rel="preconnect" href="https://www.google-analytics.com" />
+    <link rel="preconnect" href="https://storage.googleapis.com" />
 
     <!-- icon and theme stuff -->
-    <link rel="icon" href="img/favicon.png" type="image/png"><!-- 32×32 -->
-    <link rel="icon" href="img/logo.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="img/apple-touch-icon.png"><!-- 180×180 -->
-    <meta name="theme-color" content="#2A4365"/>
+    <link rel="icon" href="img/favicon.png" type="image/png" />
+    <!-- 32×32 -->
+    <link rel="icon" href="img/logo.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <!-- 180×180 -->
+    <meta name="theme-color" content="#2A4365" />
 
-    <link rel="manifest" href="manifest.json">
-
+    <link rel="manifest" href="manifest.json" />
   </head>
   <body class="bg-slate-200">
     <header class="bg-slate-800 text-white">
       <div class="max-w-7xl flex justify-between px-4 mx-auto">
         <h1 class="font-semibold text-xl py-4">
           <a href="./">
-          <span class="hidden md:inline">Charlotte/Mecklenburg </span>Quality of
-          Life Explorer</a>
+            <span class="hidden md:inline">Charlotte/Mecklenburg </span>Quality
+            of Life Explorer</a
+          >
         </h1>
         <div class="text-right relative" id="navmenu"></div>
       </div>
@@ -35,6 +40,10 @@
 
     <main class="mx-auto px-4 my-4 max-w-7xl">
       <div id="welcome"></div>
+
+      <!-- Added Disclaimer Modal Popup / 12/12/2024 -->
+      <div id="disclaimer"></div>
+
       <!-- data tabs -->
       <nav class="bg-white mt-4 shadow-md" id="tabs"></nav>
 
@@ -42,7 +51,11 @@
       <div class="mt-4 grid lg:grid-cols-3 gap-4">
         <div class="lg:col-span-2 bg-white shadow-md">
           <div id="LegendTop"></div>
-          <div id="mapContainer" style="height: 600px" class="w-full relative"></div>
+          <div
+            id="mapContainer"
+            style="height: 600px"
+            class="w-full relative"
+          ></div>
           <div class="px-3" id="misccontrols"></div>
         </div>
 
@@ -79,7 +92,6 @@
             </button>
             <p class="text-sm text-stone-600 tracking-widest">SHARE</p>
           </div>
-
         </div>
       </div>
 
@@ -133,14 +145,10 @@
 
       <div>
         Created by
-        <a
-          class="text-highlight underline"
-          href="https://mecknc.gov"
+        <a class="text-highlight underline" href="https://mecknc.gov"
           >Mecklenburg County</a
         >, the
-        <a
-          class="text-highlight underline"
-          href="https://charlottenc.gov"
+        <a class="text-highlight underline" href="https://charlottenc.gov"
           >City of Charlotte</a
         >, and
         <a class="text-highlight underline" href="http://www.uncc.edu/"
@@ -174,28 +182,38 @@
         >.
       </div>
       <div class="py-2">
-        The source code for the Quality of Life Explorer is on <a
-        class="text-highlight underline"
-        href="https://github.com/tobinbradley/quality-of-life-explorer"
-        target="_blank"
-        >Github</a
-      >.
+        The source code for the Quality of Life Explorer is on
+        <a
+          class="text-highlight underline"
+          href="https://github.com/tobinbradley/quality-of-life-explorer"
+          target="_blank"
+          >Github</a
+        >.
       </div>
     </footer>
 
     <div id="help"></div>
 
     <!-- service worker dialog -->
-  <dialog id="sw-dialog" class=" bg-highlight text-white px-3 py-2 rounded-r-md border-l-2 border-white shadow-lg">
-    <div class="flex place-items-center">
-      <div class="flex-1 pr-8 text-lg">
-        The Quality of Life Explorer has been updated!
+    <dialog
+      id="sw-dialog"
+      class="bg-highlight text-white px-3 py-2 rounded-r-md border-l-2 border-white shadow-lg"
+    >
+      <div class="flex place-items-center">
+        <div class="flex-1 pr-8 text-lg">
+          The Quality of Life Explorer has been updated!
+        </div>
+        <div>
+          <button
+            class="px-4 py-2 border-2 border-white rounded bg-white text-highlight hover:bg-highlight hover:text-white transition-colors duration-300"
+            onclick="window.location.reload()"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
-      <div>
-        <button class="px-4 py-2 border-2 border-white rounded bg-white text-highlight hover:bg-highlight hover:text-white transition-colors duration-300" onclick="window.location.reload()">Refresh</button>
-      </div>
-    </div>
-  </dialog>
+    </dialog>
+
 
     <svg
       style="position: absolute; width: 0; height: 0; overflow: hidden"
@@ -218,7 +236,7 @@
         </symbol>
         <symbol id="icon-trending_neutral" viewBox="0 0 24 24">
           <path d="M21.984 12l-3.984 3.984v-3h-15v-1.969h15v-3z"></path>
-          </symbol>
+        </symbol>
         <symbol id="icon-linkedin" viewBox="0 0 32 32">
           <path
             fill="#0077b5"
@@ -251,28 +269,52 @@
     <script type="module" src="/src/main.js"></script>
     <!--   Google Analytics -->
     <script>
-      ;(function (i, s, o, g, r, a, m) {
-        i["GoogleAnalyticsObject"] = r
-        ;(i[r] =
+      (function (i, s, o, g, r, a, m) {
+        i["GoogleAnalyticsObject"] = r;
+        (i[r] =
           i[r] ||
           function () {
-            ;(i[r].q = i[r].q || []).push(arguments)
+            (i[r].q = i[r].q || []).push(arguments);
           }),
-          (i[r].l = 1 * new Date())
-        ;(a = s.createElement(o)), (m = s.getElementsByTagName(o)[0])
-        a.async = 1
-        a.src = g
-        m.parentNode.insertBefore(a, m)
+          (i[r].l = 1 * new Date());
+        (a = s.createElement(o)), (m = s.getElementsByTagName(o)[0]);
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m);
       })(
         window,
         document,
         "script",
         "//www.google-analytics.com/analytics.js",
         "ga"
-      )
+      );
 
-      ga("create", "UA-48797957-1", "auto")
-      ga("send", "pageview")
+      ga("create", "UA-48797957-1", "auto");
+      ga("send", "pageview");
     </script>
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user has already accepted the disclaimer
+        var isAccepted = localStorage.getItem("disclaimerAccepted");
+        var elemDisclaimerOverlay =
+          document.getElementById("disclaimerOverlay");
+
+        if (!isAccepted) {
+          elemDisclaimerOverlay.classList.remove("hidden");
+        } else if (isAccepted === "true") {
+          elemDisclaimerOverlay.classList.add("hidden");
+        }
+
+        // Handle close button click
+        document
+          .getElementById("disclaimerClose")
+          .addEventListener("click", function () {
+            localStorage.setItem("disclaimerAccepted", true);
+            document
+              .getElementById("disclaimerOverlay")
+              .classList.add("hidden");
+          });
+      });
+    </script> -->
   </body>
 </html>
