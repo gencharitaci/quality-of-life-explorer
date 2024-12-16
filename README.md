@@ -7,7 +7,7 @@ Site: [https://mcmap.org/qol](https://mcmap.org/qol)
 
 # Improvements & Fixes
 - Added Disclaimer modal popup
-- Upgraded Mapligre-GL (3.5.0 --> 4.7.1)
+- Upgraded Maplibre-GL (3.5.0 --> 4.7.1)
 - Removed option 'importsNotUsedAsValues': "error" 
 - Added option "verbatimModuleSyntax":true
 
