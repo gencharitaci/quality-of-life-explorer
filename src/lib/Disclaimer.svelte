@@ -61,12 +61,11 @@
     </div>
 
     <div class="px-5 py-2 text-gray-600 text-justify">
-      When using this GIS tool, please be aware that the information is for general reference only and should not be considered a legal document. 
-      It's essential to consult primary sources such as recorded deeds and plats to verify any information before making decisions based on the data. 
-      <span class="text-red-900">Mecklenburg County, NC</span> assumes no liability for errors or omissions within the GIS data, 
-      providing it "as is" without warranty (NCGS 153A-463)
-
-      <p><span class="text-red-800 font-semibold">By using this GIS tool, the user acknowledges and agrees to these terms and conditions.</span></p>
+      This GIS tool provides information for general reference only and should not be considered a legal document. 
+      Data may not be completely accurate and users should always consult primary sources, 
+      such as recorded deeds and plats, to verify information before making any decisions based on this data. 
+      Mecklenburg County, NC assumes no liability for errors or omissions within the GIS data 
+      and provides it 'as is' without warranty <span class="text-red-900">(NCGS 153A-463)</span>.
     </div>
 
     <div class="flex justify-between px-5 py-2 bg-gray-100 border-t border-gray-300">

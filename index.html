@@ -267,7 +267,8 @@
     </svg>
 
     <script type="module" src="/src/main.js"></script>
-    <!--   Google Analytics -->
+
+    <!--   Start / Google Analytics -->
     <script>
       (function (i, s, o, g, r, a, m) {
         i["GoogleAnalyticsObject"] = r;
@@ -292,29 +293,7 @@
       ga("create", "UA-48797957-1", "auto");
       ga("send", "pageview");
     </script>
+   <!-- End / Google Analytics -->
 
-      document.addEventListener("DOMContentLoaded", function () {
-        // Check if user has already accepted the disclaimer
-        var isAccepted = localStorage.getItem("disclaimerAccepted");
-        var elemDisclaimerOverlay =
-          document.getElementById("disclaimerOverlay");
-
-        if (!isAccepted) {
-          elemDisclaimerOverlay.classList.remove("hidden");
-        } else if (isAccepted === "true") {
-          elemDisclaimerOverlay.classList.add("hidden");
-        }
-
-        // Handle close button click
-        document
-          .getElementById("disclaimerClose")
-          .addEventListener("click", function () {
-            localStorage.setItem("disclaimerAccepted", true);
-            document
-              .getElementById("disclaimerOverlay")
-              .classList.add("hidden");
-          });
-      });
-    </script> -->
   </body>
 </html>
