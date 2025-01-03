@@ -1,6 +1,5 @@
 <script>
   import Legend from "./Legend.svelte";
-  import { writable } from "svelte/store";
 
   import {
     selectedData,
@@ -15,7 +14,6 @@
     minBreak,
   } from "../store/store";
   import { isNumeric, formatNumber, sendDownload } from "./utils";
-
   import "maplibre-gl/dist/maplibre-gl.css";
 
   export let interactive = true;
@@ -32,19 +30,10 @@
     "message",
     (event) => {
       if (
-        /**
-         * Uncaught TypeError:
-         * Cannot read properties of undefined (reading 'setPitch')
-         **/
-        // event.data.pitch ||
-        // event.data.center ||
-        // event.data.bearing ||
-        // event.data.zoom
-
-        event.data?.pitch !== undefined ||
-        event.data?.center !== undefined ||
-        event.data?.bearing !== undefined ||
-        event.data?.zoom !== undefined
+        event.data.pitch ||
+        event.data.center ||
+        event.data.bearing ||
+        event.data.zoom
       ) {
         map.flyTo(event.data);
       } else {
@@ -179,41 +168,16 @@
     });
 
     // map click select/deselect
-    // map.on("click", "neighborhoods", (e) => {
-    //   const id = e.features[0].properties.id
-    //   const idx = $selectedNeighborhoods.indexOf(id)
-    //   if (idx === -1) {
-    //     $selectedNeighborhoods.push(id)
-    //   } else {
-    //     $selectedNeighborhoods.splice(idx, 1)
-    //   }
-    //   $selectedNeighborhoods = $selectedNeighborhoods
-    // })
-
-    map.on(
-      "click",
-      "neighborhoods",
-      (
-        /**
-         * @type {{ features: { properties: { id: any; }; }[]; }}
-         * */
-        e
-      ) => {
-        // Define and initialize selectedNeighborhoods as a writable store
-        let $selectedNeighborhoods = writable([]);
-
-        const id = e.features[0].properties.id;
-        $selectedNeighborhoods.update((selectedNeighborhoods) => {
-          const idx = selectedNeighborhoods.indexOf(id);
-          if (idx === -1) {
-            selectedNeighborhoods.push(id);
-          } else {
-            selectedNeighborhoods.splice(idx, 1);
-          }
-          return selectedNeighborhoods;
-        });
+    map.on("click", "neighborhoods", (e) => {
+      const id = e.features[0].properties.id;
+      const idx = $selectedNeighborhoods.indexOf(id);
+      if (idx === -1) {
+        $selectedNeighborhoods.push(id);
+      } else {
+        $selectedNeighborhoods.splice(idx, 1);
       }
-    );
+      $selectedNeighborhoods = $selectedNeighborhoods;
+    });
 
     map.on("mousemove", "neighborhoods", (e) => {
       map.getCanvas().style.cursor = "pointer";
