@@ -734,5 +734,14 @@
     "title": "High Speed Internet Access",
     "subtitle": "Percentage of households with high speed Internet access",
     "related": ["m2", "m14", "m18", "m16", "m15", "m17", "m12", "m13"]
+  },
+   {
+    "metric": "m89",
+    "category": "Environment",
+    "label": "Numbers are displayed in degrees Fahrenheit.",
+    "title": "Heat Index",
+    "decimals": 1,
+    "subtitle": "Heat index is a compound measure of both relative humidity and temperature and represents the apparent temperature.",
+    "related": ["m4", "m3", "m23"]
   }
 ]

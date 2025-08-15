@@ -2,7 +2,7 @@
 
 The Quality of Life project is a joint venture from Mecklenburg County, the City of Charlotte, and UNCC. It's built with [Svelte](https://svelte.dev/), [TailwindCSS](https://tailwindcss.com/), and [Maplibre GL JS](https://maplibre.org/maplibre-gl-js/docs/). The development and build environment is [Vite](https://vitejs.dev/). 
 
-Site: [https://mcmap.org/qol](https://mcmap.org/qol)
+Site: [https://maps.mecklenburgcountync.gov/qol](https://maps.mecklenburgcountync.gov/qol)
 
 
 # Improvements & Fixes

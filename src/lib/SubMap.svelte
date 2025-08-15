@@ -78,7 +78,7 @@
         let row = [
           key,
           ...$selectedData.m[key].map((el) =>
-            formatNumber(el, $selectedConfig.format || null)
+            `"${formatNumber(el, $selectedConfig.format || null)}"`
           ),
         ]
         if ($selectedConfig.raw_label) {
@@ -93,9 +93,14 @@
           !selectedFilter ||
           (selectedFilter && $selectedNeighborhoods.indexOf(key) !== -1)
         ) {
-          body += row.toString() + "\n"
+          console.log(row);
+          body += row.join() + "\n"
+          // console.log("body-test", body);
+          
         }
       }
+      
+      
 
       sendDownload(
         header.join(",") + "\n" + body,

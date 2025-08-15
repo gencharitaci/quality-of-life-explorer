@@ -1,8 +1,9 @@
-import { writable, readable, derived } from 'svelte/store'
+import { ckmeans } from 'simple-statistics'
+import { derived, readable, writable } from 'svelte/store'
 import dataJSON from '../../data/data.json'
 import geoStats from '../assets/geostats.json'
-import { ckmeans } from 'simple-statistics'
 import { calcAggregate, calcRaw } from '../lib/utils'
+
 
 // sort data JSON by category and title
 dataJSON.sort((a, b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title))
@@ -20,21 +21,33 @@ export let help = writable(false)
 // geojson extent
 export const mapFullExtent = readable(geoStats.bounds)
 
+
 // Set initial metric and selected sets
 let metric = dataJSON[Math.floor(Math.random() * dataJSON.length)].metric
-const hashArgs = readHashArgs()
-if (hashArgs[0]) metric = hashArgs[0]
-let selected = hashArgs[1]
+const [metricArg, neighborhoodsArg] = readHashArgs();
+if (metricArg) metric = metricArg
+let selected = neighborhoodsArg
+
+
+// Adress point
+export const selectedAddressPoint = writable(null);
 
 // read URL hash args
+/**
+ * @returns {[string|null, string[]]}
+ */
 function readHashArgs() {
-  const args = window.location.hash.replace('#', '').split('/')
-  return [
-    args[0] && dataJSON.filter(el => el.metric === 'm' + args[0]).length === 1 ?
-    'm' + args[0] : null,
-    args[1] && args[1].length > 0 && args[1].split(',').filter((r) => geoStats.keys.includes(r)) ?
-    args[1].split(',') : []
-  ]
+  const args = window.location.hash.replace('#', '').split('/');
+
+  /** @type {string|null} */
+  const metricArg = args[0] && dataJSON.some(el => el.metric === 'm' + args[0])
+    ? 'm' + args[0]
+    : null;
+
+  /** @type {string[]} */
+  const neighborhoodsArg = (args[1] || '').split(',').filter(r => geoStats.keys.includes(r));
+
+  return [metricArg, neighborhoodsArg];
 }
 
 
@@ -49,8 +62,8 @@ export const dataCategories = derived(dataConfig, val => {
 // what's new list
 export const whatsnew = readable([
   "m11", "m19", "m30", "m34", "m35", "m4", "m41", "m42", "m43", "m5", "m53", "m6", "m68",
-  "m69", "m7", "m71", "m72", "m76", "m8", "m83", "m9"
- ])
+  "m69", "m7", "m71", "m72", "m76", "m8", "m83", "m9", "m89"
+])
 
 
 // the selected metric, either random or from url hash
@@ -137,23 +150,32 @@ export let calcCountyRaw = derived([selectedData, selectedConfig], ([data, confi
   return calcRaw(data, config, true)
 })
 
-// handle the hash
+
 const hash = derived([selectedMetric, selectedNeighborhoods], ([v1, v2]) => {
-  return `#${v1.replace('m', '')}/${v2.join(',')}`
-})
+  if (typeof v2 === 'string') {
+    return `#${v1.replace('m', '')}/${v2}`;
+  } else if (Array.isArray(v2)) {
+    return `#${v1.replace('m', '')}/${v2.join(',')}`;
+  } else {
+    throw new Error("Unexpected type for selectedNeighborhoods");
+  }
+});
+
+
 hash.subscribe(value => {
-  if (!browserNav) history.pushState( {} , '', value )
+  if (!browserNav) history.pushState({}, '', value)
   browserNav = false
 })
-window.addEventListener('popstate', (event) => {
-  browserNav = true
-  const hashArgs = readHashArgs()
-  if (hashArgs[0]) selectedMetric.set(hashArgs[0])
-  if (hashArgs[1]) selectedNeighborhoods.set(hashArgs[1])
-})
-window.addEventListener('pushstate', (event) => {
-  browserNav = true
-  const hashArgs = readHashArgs()
-  if (hashArgs[0]) selectedMetric.set(hashArgs[0])
-  if (hashArgs[1]) selectedNeighborhoods.set(hashArgs[1])
-})
+window.addEventListener('popstate', () => {
+  browserNav = true;
+  const [metricArg, neighborhoodsArg] = readHashArgs();
+  if (metricArg) selectedMetric.set(metricArg);
+  selectedNeighborhoods.set(neighborhoodsArg);
+});
+
+window.addEventListener('pushstate', () => {
+  browserNav = true;
+  const [metricArg, neighborhoodsArg] = readHashArgs();
+  if (metricArg) selectedMetric.set(metricArg);
+  selectedNeighborhoods.set(neighborhoodsArg);
+});

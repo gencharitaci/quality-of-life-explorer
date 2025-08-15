@@ -1,15 +1,15 @@
 <script>
+  import { equalIntervalBreaks } from "simple-statistics";
+  import { onMount } from "svelte";
   import {
-    selectedData,
-    selectedConfig,
     calcCounty,
     calcSelected,
+    selectedConfig,
+    selectedData,
     selectedNeighborhoods,
     yearIdx,
   } from "../store/store";
   import { formatNumber, isNumeric } from "./utils";
-  import { equalIntervalBreaks } from "simple-statistics";
-  import { onMount } from "svelte";
 
   let tchart;
   let dchart;
@@ -174,10 +174,6 @@
       });
     }
 
-    /**
-     * Property 'forEach' does not exist on type 'string | string[]'.
-     * Property 'forEach' does not exist on type 'string'.
-     */
     const isArraySelectedNeighborhoods = Array.isArray($selectedNeighborhoods);
     if (isArraySelectedNeighborhoods) {
       $selectedNeighborhoods.forEach((n) => {

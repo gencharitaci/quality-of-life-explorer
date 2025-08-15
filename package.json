@@ -1,9 +1,20 @@
 {
   "name": "quality-of-life-explorer",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "author": "Tobin Bradley",
+  "maintainers": [
+    "Adem Kurtipek"
+  ],
   "license": "MIT",
   "description": "Mecklenburg County Quality of Life Explorer",
+  "homepage": "https://maps.mecklenburgcountync.gov/qol",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gencharitaci/quality-of-life-explorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gencharitaci/quality-of-life-explorer/issues"
+  },
   "type": "module",
   "scripts": {
     "dev": "node build/build.cjs && vite",

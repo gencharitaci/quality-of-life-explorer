@@ -30,7 +30,7 @@ async function fetchData(metric, calc = "agg", county = false, selected = null) 
   </h1>
   <div class="columns-2 gap-2">
     <p>
-      The <a href="https://mcmap.org/qol">Quality of Life Explorer</a>>a is an interactive online tool to help neighborhoods, government leaders and staff, businesses, community organizations, new residents and others learn more about our county and the diverse neighborhoods within it. The Explorer features over 80 variables that reflect you, the places you live and work, and collectively, our community.
+      The <a href="https://maps.mecklenburgcountync.gov/qol">Quality of Life Explorer</a>>a is an interactive online tool to help neighborhoods, government leaders and staff, businesses, community organizations, new residents and others learn more about our county and the diverse neighborhoods within it. The Explorer features over 80 variables that reflect you, the places you live and work, and collectively, our community.
     </p>
     <p>
       On these pages, you'll find information about the selected area's social, housing, economic and environmental conditions. Check out the Explorer online to learn more about what's happening, see trends over time, and connect to resources to take action on the issues that matter to you.

@@ -1,9 +1,16 @@
 <script>
-  import { selectedNeighborhoods, selectedData, mapZoom } from "../store/store";
+  import {
+    highlightNeighborhoods,
+    mapZoom,
+    selectedAddressPoint,
+    selectedData,
+    selectedNeighborhoods,
+  } from "../store/store";
   import { isNumeric } from "./utils";
 
   let searchString = "";
   let searchResults = [];
+  let isSelected = true;
 
   function search() {
     searchResults = [];
@@ -23,7 +30,7 @@
       // zipcode
       if (str.length === 5) {
         fetch(
-          `https://api.mcmap.org/v1/query/zipcodes?columns=gid as id, zip as label, 'ZIP' as cat&limit=10&filter=zip='${str}'`
+          `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/zipcodes?columns=gid as id, zip as label, 'ZIP' as cat&limit=10&filter=zip='${str}'`,
         )
           .then((response) => {
             if (!response.ok) {
@@ -37,7 +44,7 @@
           .catch((error) => {
             console.error(
               "There has been a problem with your fetch operation:",
-              error
+              error,
             );
           });
       }
@@ -49,10 +56,10 @@
       const filter = encodeURIComponent(
         `ts @@ to_tsquery('addressing_en', '${
           str.toUpperCase().replace(/ /g, "&") + ":*"
-        }')`
+        }')`,
       );
       fetch(
-        `https://api.mcmap.org/v1/query/master_address_table?columns=objectid as id, full_address as label, 'ADDRESS' as cat&limit=10&filter=${filter}`
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/master_address_table?columns=objectid as id, full_address as label, 'ADDRESS' as cat&limit=10&filter=${filter}`,
       )
         .then((response) => {
           if (!response.ok) {
@@ -66,13 +73,13 @@
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
-            error
+            error,
           );
         });
 
       // NSA
       fetch(
-        `https://api.mcmap.org/v1/query/neighborhood_statistical_areas?columns=gid as id, nsa_name as label, 'NSA' as cat&limit=10&filter=nsa_name%20ilike%20'${str}%25'`
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/neighborhood_statistical_areas?columns=gid as id, nsa_name as label, 'NSA' as cat&limit=10&filter=nsa_name%20ilike%20'${str}%25'`,
       )
         .then((response) => {
           if (!response.ok) {
@@ -86,20 +93,62 @@
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
-            error
+            error,
           );
         });
     }
   }
 
+  async function getAddressCoordinates(id) {
+    await fetch(
+      `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/master_address_table?columns=round(ST_x(ST_transform(the_geom,4326))::NUMERIC,4) as lng,round(ST_y(ST_transform(the_geom,4326))::NUMERIC,4) as lat,round(ST_x(the_geom)::NUMERIC, 4) AS x,round(ST_y(the_geom)::NUMERIC, 4) AS y&filter=objectid=${id}`,
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        if (json.length) {
+          const { x, y, lng, lat } = json[0];
+
+          selectedAddressPoint.set({
+            x, // Map SRID (2264 gibi)
+            y,
+            lng, // WGS84 EPSG:4326
+            lat,
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching address point:", error);
+      });
+  }
+
+  function clearSelection() {
+    // Clear existing highlight + address marker + selected neighborhoods
+    highlightNeighborhoods.set([]);
+    selectedNeighborhoods.set([]);
+    selectedAddressPoint.set(null);
+  }
+
+  function selectAndHighlight(ids) {
+    const unique_ids = [...new Set(ids)]; // Remove duplicate ids before proceed
+    selectedNeighborhoods.set(unique_ids);
+    highlightNeighborhoods.set(unique_ids);
+    mapZoom.set(true);
+  }
+
   function selectResults(cat, id) {
+    const found = searchResults.find((r) => r.id === id && r.cat === cat);
+    if (found) searchString = found.label || id;
+    isSelected = true;
+    console.log(found);
+
     if (cat === "NPA") {
-      $selectedNeighborhoods = [id];
-      $mapZoom = true;
+      selectAndHighlight([""]); // Clear highlight if NPA
+      selectedNeighborhoods.set([id]);
+      mapZoom.set(true);
     }
     if (cat === "NSA") {
       fetch(
-        `https://api.mcmap.org/v1/intersect_feature/neighborhood_statistical_areas/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=neighborhood_statistical_areas.gid=${id}`
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/intersect_feature/neighborhood_statistical_areas/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=neighborhood_statistical_areas.gid=${id}`,
       )
         .then((response) => {
           if (!response.ok) {
@@ -108,19 +157,21 @@
           return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString());
-          $mapZoom = true;
+          // $selectedNeighborhoods = json.map((el) => el.id.toString());
+          // $mapZoom = true;
+          const ids = json.map((el) => el.id.toString());
+          selectAndHighlight(ids);
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
-            error
+            error,
           );
         });
     }
     if (cat === "ZIP") {
       fetch(
-        `https://api.mcmap.org/v1/intersect_feature/zipcodes/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=zipcodes.gid=${id}`
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/intersect_feature/zipcodes/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=zipcodes.gid=${id}`,
       )
         .then((response) => {
           if (!response.ok) {
@@ -129,19 +180,24 @@
           return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString());
-          $mapZoom = true;
+          // $selectedNeighborhoods = json.map((el) => el.id.toString());
+          // $mapZoom = true;
+          const ids = json.map((el) => el.id.toString());
+          selectAndHighlight(ids);
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
-            error
+            error,
           );
         });
     }
     if (cat === "ADDRESS") {
+      // Get address point coordinates to mark on map
+      getAddressCoordinates(`${id}`);
+
       fetch(
-        `https://api.mcmap.org/v1/intersect_feature/master_address_table/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=master_address_table.objectid=${id}`
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/intersect_feature/master_address_table/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=master_address_table.objectid=${id}`,
       )
         .then((response) => {
           if (!response.ok) {
@@ -150,16 +206,34 @@
           return response.json();
         })
         .then((json) => {
-          $selectedNeighborhoods = json.map((el) => el.id.toString());
-          $mapZoom = true;
+          // $selectedNeighborhoods = json.map((el) => el.id.toString());
+          // $mapZoom = true;
+          const ids = json.map((el) => el.id.toString());
+          selectAndHighlight(ids);
         })
         .catch((error) => {
           console.error(
             "There has been a problem with your fetch operation:",
-            error
+            error,
           );
         });
     }
+  }
+
+
+  function clearSearch() {
+    clearSelection();
+    searchString = "";
+    // searchResults = [];
+    setTimeout(() => (searchResults = []), 250)
+  }
+  
+  // Function to clear the search box and results when clicking inside the input area
+  function handleInputClick() {
+    if (!isSelected) {
+      clearSearch();
+    }
+    isSelected = false;
   }
 </script>
 
@@ -169,9 +243,10 @@
       class="border-b-stone-200 border-b-2 w-full focus:border-b-pink-600"
       bind:value={searchString}
       on:input={search}
-      on:focus={search}
-      on:blur={() => setTimeout(() => (searchResults = []), 250)}
+      on:focus={() => clearSearch()}
+      on:blur={handleInputClick}
       placeholder="Search..."
+      on:click={handleInputClick} 
     />
   </div>
 

@@ -1,21 +1,24 @@
 <script>
   import Legend from "./Legend.svelte";
 
-  import {
-    selectedData,
-    breaks,
-    yearIdx,
-    colors,
-    selectedNeighborhoods,
-    selectedConfig,
-    highlightNeighborhoods,
-    mapZoom,
-    mapFullExtent,
-    minBreak,
-  } from "../store/store";
-  import { isNumeric, formatNumber, sendDownload } from "./utils";
   import "maplibre-gl/dist/maplibre-gl.css";
+  import {
+    breaks,
+    colors,
+    highlightNeighborhoods,
+    mapFullExtent,
+    mapZoom,
+    minBreak,
+    selectedAddressPoint,
+    selectedConfig,
+    selectedData,
+    selectedNeighborhoods,
+    yearIdx,
+  } from "../store/store";
+  import { formatNumber, isNumeric, sendDownload } from "./utils";
 
+  let addressMarker;
+  
   export let interactive = true;
   export let flyto;
 
@@ -23,6 +26,7 @@
   let mapReady;
   let maplibre;
   let geoJSON;
+
 
   // let map take flyto arg from parent
   // useful for "story telling" iframe
@@ -35,7 +39,12 @@
         event.data.bearing ||
         event.data.zoom
       ) {
-        map.flyTo(event.data);
+        // map.flyTo(event.data);
+        map.flyTo({
+          zoom: event.data.zoom,
+          center: event.data.center,
+          pitch: event.data.pitch
+        });
       } else {
         map.setPitch(0);
         map.setBearing(0);
@@ -44,8 +53,9 @@
         });
       }
     },
-    false
+    false,
   );
+
 
   // get GeoJSON for zooming
   fetch("data/geography/geography.geojson.json")
@@ -54,7 +64,7 @@
     .catch((error) => {
       console.error(
         "There has been a problem with your fetch operation:",
-        error
+        error,
       );
     });
 
@@ -72,12 +82,36 @@
   }
 
   // show highlighted neighborhoods
+  // $: if (mapReady && $highlightNeighborhoods) {
+  //   if ($highlightNeighborhoods.length > 0) {
+  //     map.setFilter("neighborhoods-highlight", [
+  //       "match",
+  //       ["get", "id"],
+  //       $highlightNeighborhoods,
+  //       true,
+  //       false,
+  //     ]);
+  //   } else {
+  //     map.setFilter("neighborhoods-highlight", [
+  //       "match",
+  //       ["get", "id"],
+  //       ["-1"],
+  //       true,
+  //       false,
+  //     ]);
+  //   }
+  // }
+
+  // show highlighted neighborhoods - updated to highlight all search types
   $: if (mapReady && $highlightNeighborhoods) {
-    if ($highlightNeighborhoods.length > 0) {
+    // Control and remove duplicates if exist
+    const uniqueHighlightIDs = [...new Set($highlightNeighborhoods)]; 
+
+    if (uniqueHighlightIDs.length > 0) {
       map.setFilter("neighborhoods-highlight", [
         "match",
         ["get", "id"],
-        $highlightNeighborhoods,
+        uniqueHighlightIDs,
         true,
         false,
       ]);
@@ -92,31 +126,93 @@
     }
   }
 
+
+  function flattenCoords(arr) {
+    const flat = [];
+
+    function recurse(subArr) {
+      if (typeof subArr[0] === "number") {
+        flat.push(subArr);
+      } else {
+        subArr.forEach(recurse);
+      }
+    }
+
+    recurse(arr);
+    return flat;
+  };
+
+
+  // zoom to selected on page load or on search result
+  // $: if (mapReady && geoJSON && $mapZoom && $selectedNeighborhoods.length > 0) {
+  //   $mapZoom = false;
+  //   let bounds = new maplibre.LngLatBounds();
+
+  //   geoJSON.features.forEach((el) => {
+  //     if ($selectedNeighborhoods.indexOf(el.properties.id) !== -1) {
+  //       el.geometry.coordinates.forEach((coords) => {
+  //         coords.forEach((coord) => {
+  //           bounds.extend(coord);
+  //         });
+  //       });
+  //     }
+  //   });
+
+  //   if (bounds.lng) map.fitBounds(bounds, { padding: 100 });
+  // }
+
+
   // zoom to selected on page load or on search result
   $: if (mapReady && geoJSON && $mapZoom && $selectedNeighborhoods.length > 0) {
     $mapZoom = false;
     let bounds = new maplibre.LngLatBounds();
 
     geoJSON.features.forEach((el) => {
-      if ($selectedNeighborhoods.indexOf(el.properties.id) !== -1) {
-        el.geometry.coordinates.forEach((coords) => {
-          coords.forEach((coord) => {
-            bounds.extend(coord);
-          });
+      if ($selectedNeighborhoods.includes(el.properties.id)) {
+        const coords = el.geometry.coordinates;
+        flattenCoords(coords).forEach((coord) => {
+          bounds.extend(coord);
         });
       }
     });
 
-    if (bounds.lng) map.fitBounds(bounds, { padding: 100 });
+    if (bounds.isEmpty() === false) {
+      map.fitBounds(bounds, { padding: 100 });
+    }
   }
 
+
   // show selected
+  // $: if (mapReady && $selectedNeighborhoods) {
+  //   if ($selectedNeighborhoods.length > 0) {
+  //     map.setFilter("neighborhoods-outline", [
+  //       "match",
+  //       ["get", "id"],
+  //       $selectedNeighborhoods,
+  //       true,
+  //       false,
+  //     ]);
+  //   } else {
+  //     map.setFilter("neighborhoods-outline", [
+  //       "match",
+  //       ["get", "id"],
+  //       ["-1"],
+  //       true,
+  //       false,
+  //     ]);
+  //   }
+  // }
+
+  // show selected - updated to highlight all search types
   $: if (mapReady && $selectedNeighborhoods) {
-    if ($selectedNeighborhoods.length > 0) {
+    // Control and remove duplicates if exist
+    const uniqueIDs = [...new Set($selectedNeighborhoods)]; 
+
+    if (uniqueIDs.length > 0) {
       map.setFilter("neighborhoods-outline", [
         "match",
         ["get", "id"],
-        $selectedNeighborhoods,
+        uniqueIDs,
         true,
         false,
       ]);
@@ -171,6 +267,12 @@
     map.on("click", "neighborhoods", (e) => {
       const id = e.features[0].properties.id;
       const idx = $selectedNeighborhoods.indexOf(id);
+
+      if (!Array.isArray($selectedNeighborhoods)) {
+        $selectedNeighborhoods = [id];
+        return;
+      }
+
       if (idx === -1) {
         $selectedNeighborhoods.push(id);
       } else {
@@ -190,8 +292,8 @@
             `<div style="text-align: center; margin: 0; padding: 0;"><h3 style="font-size: 1.2em; margin: 0; padding: 0; line-height: 1em; font-weight: bold;">NPA ${id}</h3>${formatNumber(
               $selectedData.m[id][$yearIdx],
               $selectedConfig.format || null,
-              $selectedConfig.decimals || null
-            )}</div>`
+              $selectedConfig.decimals || null,
+            )}</div>`,
           )
           .addTo(map);
       } else {
@@ -227,7 +329,7 @@
       map.addSource("neighborhoods", {
         type: "geojson",
         attribution:
-          "<a href='https://mcmap.org/qol' target='_blank'>Quality of Life Explorer</a>",
+          "<a href='https://maps.mecklenburgcountync.gov/qol' target='_blank'>Quality of Life Explorer</a>",
         data: "data/geography/geography.geojson.json",
       });
       map.addLayer({
@@ -236,7 +338,8 @@
         source: "neighborhoods",
         filter: ["match", ["get", "id"], ["-1"], true, false],
         paint: {
-          "fill-color": "#FDE047",
+          // "fill-color": "#FDE047",
+          "fill-color": "#fde04750"
         },
       });
       map.addLayer(
@@ -249,7 +352,7 @@
             "fill-outline-color": "white",
           },
         },
-        firstSymbolId
+        firstSymbolId,
       );
       map.addLayer({
         id: "neighborhoods-default-outline",
@@ -337,6 +440,40 @@
       true,
       false,
     ]);
+  };
+
+
+  function addAddressPoint() {
+    if (!map || !$selectedAddressPoint?.lng || !$selectedAddressPoint?.lat)
+      return;
+
+    if (addressMarker) {
+      addressMarker.remove();
+    }
+
+    addressMarker = new maplibre.Marker({ color: "red" })
+      .setLngLat([$selectedAddressPoint.lng, $selectedAddressPoint.lat])
+      .addTo(map);
+
+    map.flyTo({
+      center: [$selectedAddressPoint.lng, $selectedAddressPoint.lat],
+      zoom: 12,
+    });
+  }
+
+  function clearAddressPoint() {
+    addressMarker.remove();
+    addressMarker = null;
+  }
+  
+    // mark selected address point on map
+    $: if (mapReady && $selectedAddressPoint?.lng && $selectedAddressPoint?.lat) {
+    addAddressPoint();
+  }
+
+  // If there is a selected Address Marker on the map and Store is cleared, also remove the Marker
+  $: if (mapReady && $selectedAddressPoint === null && addressMarker) {
+    clearAddressPoint();
   }
 
   // full extent button
@@ -422,7 +559,7 @@
         sendDownload(
           map.getCanvas().toDataURL("image/png"),
           null,
-          `${$selectedConfig.title}, ${$selectedData.years[$yearIdx]}.png`
+          `${$selectedConfig.title}, ${$selectedData.years[$yearIdx]}.png`,
         );
       };
 
@@ -443,7 +580,7 @@
 <div id="map" use:init class="w-full h-full" />
 {#if interactive}
   <button
-    class="absolute bottom-2 right-2 bg-white shadow border-2 text-sm border-gray-200 rounded-md hover:bg-gray-100 p-1"
+    class="absolute bottom-2 mb-10 right-2 bg-white shadow border-2 text-sm border-gray-200 rounded-md hover:bg-gray-100 p-1"
     on:click={() => ($selectedNeighborhoods = [])}>Clear</button
   >
 {/if}
