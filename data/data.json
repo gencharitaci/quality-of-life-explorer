@@ -735,7 +735,7 @@
     "subtitle": "Percentage of households with high speed Internet access",
     "related": ["m2", "m14", "m18", "m16", "m15", "m17", "m12", "m13"]
   },
-   {
+  {
     "metric": "m89",
     "category": "Environment",
     "label": "Numbers are displayed in degrees Fahrenheit.",
