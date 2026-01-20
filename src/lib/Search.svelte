@@ -101,7 +101,7 @@
 
   async function getAddressCoordinates(id) {
     await fetch(
-      `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/master_address_table?columns=round(ST_x(ST_transform(the_geom,4326))::NUMERIC,4) as lng,round(ST_y(ST_transform(the_geom,4326))::NUMERIC,4) as lat,round(ST_x(the_geom)::NUMERIC, 4) AS x,round(ST_y(the_geom)::NUMERIC, 4) AS y&filter=objectid=${id}`,
+      `https://maps.mecklenburgcountync.gov/dirt/api/v1/query/master_address_table?columns=round(ST_x(ST_transform(shape,4326))::NUMERIC,4) as lng,round(ST_y(ST_transform(shape,4326))::NUMERIC,4) as lat,round(ST_x(shape)::NUMERIC, 4) AS x,round(ST_y(shape)::NUMERIC, 4) AS y&filter=objectid=${id}`,
     )
       .then((response) => response.json())
       .then((json) => {
@@ -197,7 +197,7 @@
       getAddressCoordinates(`${id}`);
 
       fetch(
-        `https://maps.mecklenburgcountync.gov/dirt/api/v1/intersect_feature/master_address_table/neighborhoods?geom_column_from=the_geom&geom_column_to=the_geom&columns=neighborhoods.id&filter=master_address_table.objectid=${id}`,
+        `https://maps.mecklenburgcountync.gov/dirt/api/v1/intersect_feature/master_address_table/neighborhoods?geom_column_from=shape&geom_column_to=the_geom&columns=neighborhoods.id&filter=master_address_table.objectid=${id}`,
       )
         .then((response) => {
           if (!response.ok) {
