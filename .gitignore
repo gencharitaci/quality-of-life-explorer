@@ -34,3 +34,5 @@ TODO.md
 bun.lockb
 package-lock.json
 .env
+*.bak 
+SUMMARY.md
