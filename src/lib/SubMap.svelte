@@ -1,7 +1,7 @@
 <script>
   import Time from "./Time.svelte"
   import Table from "./Table.svelte"
-  import groups from "../assets/neighborhod-groups.json"
+  import groups from "../assets/neighborhood-groups.json"
   import {
     selectedNeighborhoods,
     selectedMetric,
