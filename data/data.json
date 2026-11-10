@@ -4,8 +4,10 @@
     "category": "Character",
     "label": "years",
     "title": "Age of Residents",
+    "decimals": 1,
     "world_val": {
-      "y_2020": 35.2
+      "y_2020": 35.2,
+      "y_2023": 34.5
     },
     "subtitle": "Median age of residents",
     "related": ["m47", "m13", "m12"]
@@ -145,7 +147,8 @@
     "format": "money",
     "title": "Household Income",
     "world_val": {
-      "y_2021": 73124
+      "y_2021": 73124,
+      "y_2023": 83765
     },
     "subtitle": "Median household income",
     "related": ["m38", "m20", "m39", "m47", "m40"]
@@ -545,7 +548,8 @@
     "format": "money",
     "title": "Rental Costs",
     "world_val": {
-      "y_2021": 1276
+      "y_2021": 1276,
+      "y_2023": 1521
     },
     "subtitle": "Median gross rent of renter-occupied housing units",
     "related": ["m53", "m29", "m37", "m82"]
